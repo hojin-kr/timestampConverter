@@ -1,0 +1,250 @@
+<!doctype html>
+<head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>timestamp shop</title>
+<style>
+  .main {
+    margin-top: 5%;
+    margin-left: 10%;
+    margin-right: 10%;
+  }
+  .date-form {
+    display: flex;
+  }
+  .date-form .inner-form {
+    margin: 0.2em;
+  }
+
+  .change {
+    border-color: rgb(255, 0, 0);
+  }
+
+  #clock {
+    width: 1em;
+    height: 0.1em;
+    background-color: #000000;
+  }
+  .title-main {
+    display: flex;
+    flex-direction: row;
+  }
+
+</style>
+</head>
+<body>
+<div class="main">
+  <div class="title-main">
+    <h1 class="title">Timestamp Conversion </h1><div id="clock"></div>
+  </div>
+  <div class="form-group">
+    <label for="timestamp">Timestamp <span class="type">(Seconds | Unix)</span></label>
+    <input class="form-control" id="timestamp">
+  </div>
+  <div class="form-group">
+    <label for="date">Date</label>
+    <div class="date-form">
+      <div class="inner-form">
+        <small>Year</small>
+        <input class="form-control date" id="year" placeholder="year">
+      </div>
+      <div class="inner-form">
+        <small>Month</small>
+      <input class="form-control date" id="month" placeholder="month">
+      </div>
+      <div class="inner-form">
+        <small>Day</small>
+      <input class="form-control date" id="day" placeholder="day">
+      </div>
+    </div>
+    <div class="date-form">
+      <div class="inner-form">
+        <small>Hours</small>
+      <input class="form-control date" id="hour" placeholder="hour">
+      </div>
+      <div class="inner-form">
+        <small>Minutes</small>
+      <input class="form-control date" id="min" placeholder="min">
+      </div>
+      <div class="inner-form">
+        <small>Seconds</small>
+      <input class="form-control date" id="second" placeholder="second">
+      </div>
+      <div class="inner-form">
+        <small>Milliseconds</small>
+      <input class="form-control date" id="milli" placeholder="milli">
+      </div>
+    </div> 
+  </div>
+  <label for="human-readable">Human Readable</label>
+  <table class="table table-hover">
+    <tr>
+      <td>GMT</td>
+      <td class="gmt"></td>
+    </tr>
+    <tr>
+      <td>Local</td>
+      <td class="local"></td>
+    </tr>
+    <tr>
+      <td>Locale</td>
+      <td class="locale"></td>
+    </tr>
+    <tr>
+      <td>Time</td>
+      <td class="time"></td>
+    </tr>
+  </table>
+</div>
+</div>
+</body>
+</html>
+<script src="./js/anime/anime.min.js"></script>
+
+<script>
+let time = Math.floor(Date.now() / 1000);
+let date = new Date(time * 1000);
+let auto = true;
+
+
+$(document).ready(function(){
+  anime({
+  targets: document.querySelector('#timestamp'),
+  value: [0, time],
+  easing: 'easeInOutExpo',
+  round: 1
+  });
+  setFirst(date);
+});
+
+
+// loop
+setInterval(function(){ 
+  if(auto) {
+    let time = Math.floor(Date.now() / 1000);
+    let date = new Date(time * 1000);
+    $('#timestamp').val(time);
+    set(date);
+  }
+ }, 1000);
+
+ anime({
+      targets: '#clock',
+      loop: true,
+      rotate: {
+        value: 360,
+        duration: 10000,
+        easing: 'linear'
+      }
+    });
+
+// timestamp to date
+$('#timestamp').on('change', (event)=>{
+  switch(event.currentTarget.value.length) {
+    case 10:
+      $('.type').text('(Seconds | Unix)')
+      set(new Date(Number(event.currentTarget.value) * 1000));
+    break;
+    case 13:
+      $('.type').text('(Milliseconds)')
+      set(new Date(Number(event.currentTarget.value)));
+    break;
+    default:
+      $('.type').text('(Unkown)');
+    break;
+  }
+})
+
+$('#timestamp').on('click', ()=>{
+  auto = false;
+})
+
+$('.date').on('click', ( )=>{
+  auto = false;
+})
+
+// date to timestamp
+$('.date').on('change', ( )=>{
+  let _date = new Date($('#year').val(), $('#month').val() - 1, $('#day').val(), $('#hour').val(), $('#min').val(), $('#second').val());
+  $('#timestamp').val(Math.floor(_date.getTime() / 1000));
+  set(_date);
+})
+
+function set(_date) {
+  $('.gmt').text(_date.toGMTString());
+  $('.local').text(_date.toString());
+  $('.locale').text(_date.toLocaleString());
+  $('.time').text( _date.getHours() + ':' + _date.getMinutes() + ':' + _date.getSeconds());
+  let year = _date.getFullYear();
+  let month = _date.getMonth() + 1;
+  let day = _date.getDate();
+  let hours = _date.getHours();
+  let min = _date.getMinutes();
+  let seconds =_date.getSeconds();
+  if($('#year').val() != year) {
+    $('#year').val(year);
+  }
+  if($('#month').val() != month) {
+    $('#month').val(month); 
+  }
+  if($('#day').val() != day) {
+    $('#day').val(day); 
+  }
+  if($('#hour').val() != hours) {
+    $('#hour').val(hours); 
+  }
+  if($('#min').val() != min) {
+    $('#min').val(min); 
+  }
+  if($('#second').val() != seconds) {
+    $('#second').val(seconds); 
+  }
+  $('#milli').val(_date.getMilliseconds());
+}
+
+function setFirst(_date) {
+  $('.gmt').text(_date.toGMTString());
+  $('.local').text(_date.toString());
+  $('.locale').text(_date.toLocaleString());
+  $('.time').text( _date.getHours() + ':' + _date.getMinutes() + ':' + _date.getSeconds());
+  anime({
+  targets: document.querySelector('#year'),
+  value: [0, _date.getFullYear()],
+  easing: 'easeInOutExpo',
+  round: 1
+  });
+  anime({
+  targets: document.querySelector('#month'),
+  value: [0, _date.getMonth() + 1],
+  easing: 'easeInOutExpo',
+  round: 1
+  });
+  anime({
+  targets: document.querySelector('#day'),
+  value: [0, _date.getDate()],
+  easing: 'easeInOutExpo',
+  round: 1
+  });
+  anime({
+  targets: document.querySelector('#hour'),
+  value: [0, _date.getHours()],
+  easing: 'easeInOutExpo',
+  round: 1
+  });
+  anime({
+  targets: document.querySelector('#min'),
+  value: [0, _date.getMinutes()],
+  easing: 'easeInOutExpo',
+  round: 1
+  });
+  anime({
+  targets: document.querySelector('#second'),
+  value: [0, _date.getSeconds()],
+  easing: 'easeInOutExpo',
+  round: 1
+  });
+}
+</script>
