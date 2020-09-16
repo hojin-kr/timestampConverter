@@ -55,6 +55,18 @@
       display: flex;
       flex-direction: row;
     }
+    #logs-overlay {
+      position: fixed;
+      bottom: 0px;
+      right: 0px;
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    #dark-overlay {
+      position: fixed;
+      top: 5em;
+      right: 3em;
+    }
   </style>
 </head>
 
@@ -104,7 +116,7 @@
       </div>
     </div>
     <label for="human-readable">Human Readable</label>
-    <table class="table table-hover">
+    <table class="table">
       <tr>
         <td>GMT</td>
         <td class="gmt"></td>
@@ -134,9 +146,14 @@
       </div>
     </div>
     <br>
-    <label for="Logs">Logs</label>
-    <table class="table table-hover" id="logs">
-    </table>
+    <div id="logs-overlay">
+      <table class="table" id="logs">
+      </table>
+    </div>
+    <div id="dark-overlay">
+      <label for="Dark">Dark mode</label>
+      <input id="dark" type="checkbox">
+    </div>
     <br>
     <label for="description">Description</label>
     <p>Unix time (also known as Epoch time, POSIX time, seconds since the Epoch, or UNIX Epoch time) is a system for describing a point in time. It is the number of seconds that have elapsed since the Unix epoch, minus leap seconds; the Unix epoch is 00:00:00 UTC on 1 January 1970. Leap seconds are ignored, with a leap second having the same Unix time as the second before it, and every day is treated as if it contains exactly 86400 seconds. Due to this treatment, Unix time is not a true representation of UTC.</p>
@@ -163,7 +180,7 @@
       round: 1
     });
     setFirst(date);
-    $('#logs').prepend('<tr><td>' + time + '</td><td>' + date.toLocaleString() + '</td></tr>');
+    addLog(time, date.toLocaleString());
   });
 
 
@@ -193,12 +210,12 @@
       case 10:
         $('.type').text('(Seconds | Unix)')
         set(new Date(Number(event.currentTarget.value) * 1000));
-        $('#logs').prepend('<tr><td>' + event.currentTarget.value + '</td><td>' + new Date(Number(event.currentTarget.value) * 1000).toLocaleString() + '</td></tr>');
+        addLog(event.currentTarget.value, new Date(Number(event.currentTarget.value) * 1000).toLocaleString());
         break;
       case 13:
         $('.type').text('(Milliseconds)')
         set(new Date(Number(event.currentTarget.value)));
-        $('#logs').prepend('<tr><td>' + event.currentTarget.value + '</td><td>' + new Date(Number(event.currentTarget.value)).toLocaleString() + '</td></tr>');
+        addLog(event.currentTarget.value, new Date(Number(event.currentTarget.value)).toLocaleString());
         break;
       default:
         $('.type').text('(Unkown)');
@@ -237,8 +254,26 @@
     let _date = new Date($('#year').val(), $('#month').val() - 1, $('#day').val(), $('#hour').val(), $('#min')
     .val(), $('#second').val());
     $('#timestamp').val(Math.floor(_date.getTime() / 1000));
-    $('#logs').prepend('<tr><td>' + Math.floor(_date.getTime() / 1000) + '</td><td>' + _date.toLocaleString() + '</td></tr>');
+    addLog(Math.floor(_date.getTime() / 1000), _date.toLocaleString());
     set(_date);
+  })
+
+  function addLog(time, date) {
+    $('#logs').prepend('<tr><td>' + time + '</td><td>' + date + '</td></tr>');
+  }
+
+  // dark mode
+  $('#dark').on('change', () => {
+    let isDark = $('#dark').prop("checked");
+    if(isDark) {
+      $('body').css('color', '#ffffff');
+      $('body table').css('color', '#ffffff');
+      $('body').css('background-color', '#000000');
+    } else {
+      $('body').css('color', '#000000');
+      $('body table').css('color', '#000000');
+      $('body').css('background-color', '#ffffff');
+    }
   })
 
   function set(_date) {
