@@ -64,8 +64,8 @@
 
     #dark-overlay {
       position: fixed;
-      top: 5em;
-      right: 3em;
+      top: 3em;
+      right: 2em;
     }
   </style>
 </head>
@@ -79,6 +79,7 @@
     <div class="form-group">
       <label for="timestamp">Timestamp <span class="type">(Seconds | Unix)</span></label>
       <input class="form-control" id="timestamp">
+      <small>Displays the date based on the timestamp.</small>
     </div>
     <div class="form-group">
       <label for="date">Date</label>
@@ -114,6 +115,7 @@
           <input class="form-control date" id="milli" placeholder="milli">
         </div>
       </div>
+      <small>Displays the timestamp based on the date.</small>
     </div>
     <label for="human-readable">Human Readable</label>
     <table class="table">
@@ -133,6 +135,7 @@
         <td>Time</td>
         <td class="time"></td>
       </tr>
+      <small>Displays the Human Readable based on the timestamp.</small>
     </table>
     <label for="Function">Day to time converter</label>
     <div class="date-form">
@@ -145,22 +148,19 @@
         <input class="form-control date" id="timeTo" placeholder="Time">
       </div>
     </div>
+    <small>time to day or day to time converter</small>
     <br>
+    <label for="Logs">Logs</label>
+    <br>
+    <small>Shows up to 7 logs</small>
     <div id="logs-overlay">
       <table class="table" id="logs">
       </table>
     </div>
     <div id="dark-overlay">
-      <label for="Dark">Dark mode</label>
+      <label for="Dark">mode</label>
       <input id="dark" type="checkbox">
     </div>
-    <br>
-    <label for="description">Description</label>
-    <p>Unix time (also known as Epoch time, POSIX time, seconds since the Epoch, or UNIX Epoch time) is a system for describing a point in time. It is the number of seconds that have elapsed since the Unix epoch, minus leap seconds; the Unix epoch is 00:00:00 UTC on 1 January 1970. Leap seconds are ignored, with a leap second having the same Unix time as the second before it, and every day is treated as if it contains exactly 86400 seconds. Due to this treatment, Unix time is not a true representation of UTC.</p>
-    <P>유닉스 시간(영어: Unix time)은 시각을 나타내는 방식이다. POSIX 시간이나 Epoch 시간이라고 부르기도 한다. 1970년 1월 1일 00:00:00 협정 세계시(UTC) 부터의 경과 시간을 초로 환산하여 정수로 나타낸 것이다. 유닉스 시간에서 윤초는 무시된다. 유닉스 계열 운영 체제나 여러 다른 운영 체제, 그리고 파일 형식들에서 사용된다. 윤초 처리 방식 때문에 시간을 선형으로 표현하지 못하며, 협정 세계시의 윤초를 표현할 수 없다. 유닉스 시간은 대다수의 유닉스 운영 체제에서 date +%s를 명령행에 입력하여 확인할 수 있다. 32비트로 표현된 유닉스 시간은 1970년 1월 1일 00:00 (UTC)에서 2,147,483,647 (231 - 1) 지난 후인 2038년 1월 19일 03:14:08 UTC에 2038년 문제를 발생시킨다. 이는 산술 오버플로와 관련 있는 문제이다.</P>
-    <p>UNIX時間（ユニックスじかん）またはUNIX時刻（ユニックスじこく、UNIX time（ユニックスタイム）、POSIX time（ポジックスタイム））とはコンピューターシステム上での時刻表現の一種。UNIXエポック、すなわち協定世界時 (UTC) での1970年1月1日午前0時0分0秒から形式的な経過秒数（すなわち、実質的な経過秒数から、その間に挿入された閏秒を引き、削除された閏秒を加えたもの）として表される。GPS時刻などとは異なり、大多数のシステムでは、本当の経過秒数を表すものではない。 UNIX系のオペレーティングシステム（データ型はtime_t）だけでなく、他の多くのオペレーティングシステムにおいてもこの表現方法が用いられている。システム内部では32ビットまたは64ビットの符号付整数 (signed int) で扱われていることが普通である。ここで、以前は多かった32ビットで扱われている場合で、符号付きであった場合、その最大値 2,147,483,647 を超えると負の値になり、正しく時刻を扱えなくなるという問題がある。これを2038年問題という。</p>
-    <p>UNIX時間，或稱POSIX時間是UNIX或類UNIX系統使用的時間表示方式：從UTC1970年1月1日0時0分0秒起至現在的總秒數，不考慮閏秒。 在多數Unix系統上Unix時間可以透過date +%s指令來檢查 1970年， Unix正式诞生，在第一版《Unix Programmer's Manual》中把“1971年11月3日”定义为“自1970年1月1日0時0分0秒以来以1/60秒为单位的时间”。此后，这个定义由于可定义的时间范围，时区，闰秒等问题被重新定义。</p>
-  </div>
 </body>
 
 </html>
@@ -259,6 +259,10 @@
   })
 
   function addLog(time, date) {
+    if($('#logs tr').length > 6) {
+      $("#logs tr:last-child").remove();
+    }
+    console.log($('#logs tr').length);
     $('#logs').prepend('<tr><td>' + time + '</td><td>' + date + '</td></tr>');
   }
 
@@ -269,10 +273,12 @@
       $('body').css('color', '#ffffff');
       $('body table').css('color', '#ffffff');
       $('body').css('background-color', '#000000');
+      $('#clock').css('background-color', '#ffffff');
     } else {
       $('body').css('color', '#000000');
       $('body table').css('color', '#000000');
       $('body').css('background-color', '#ffffff');
+      $('#clock').css('background-color', '#000000');
     }
   })
 
