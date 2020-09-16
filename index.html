@@ -122,8 +122,22 @@
         <td class="time"></td>
       </tr>
     </table>
-    <label for="Options">Options</label>
-    <p>Working on it</p>
+    <label for="Function">Day to time converter</label>
+    <div class="date-form">
+      <div class="inner-form">
+        <small>Day</small>
+        <input class="form-control date" id="dayTo" placeholder="Day">
+      </div>
+      <div class="inner-form">
+        <small>Time</small>
+        <input class="form-control date" id="timeTo" placeholder="Time">
+      </div>
+    </div>
+    <br>
+    <label for="Logs">Logs</label>
+    <table class="table table-hover" id="logs">
+    </table>
+    <br>
     <label for="description">Description</label>
     <p>Unix time (also known as Epoch time, POSIX time, seconds since the Epoch, or UNIX Epoch time) is a system for describing a point in time. It is the number of seconds that have elapsed since the Unix epoch, minus leap seconds; the Unix epoch is 00:00:00 UTC on 1 January 1970. Leap seconds are ignored, with a leap second having the same Unix time as the second before it, and every day is treated as if it contains exactly 86400 seconds. Due to this treatment, Unix time is not a true representation of UTC.</p>
     <P>유닉스 시간(영어: Unix time)은 시각을 나타내는 방식이다. POSIX 시간이나 Epoch 시간이라고 부르기도 한다. 1970년 1월 1일 00:00:00 협정 세계시(UTC) 부터의 경과 시간을 초로 환산하여 정수로 나타낸 것이다. 유닉스 시간에서 윤초는 무시된다. 유닉스 계열 운영 체제나 여러 다른 운영 체제, 그리고 파일 형식들에서 사용된다. 윤초 처리 방식 때문에 시간을 선형으로 표현하지 못하며, 협정 세계시의 윤초를 표현할 수 없다. 유닉스 시간은 대다수의 유닉스 운영 체제에서 date +%s를 명령행에 입력하여 확인할 수 있다. 32비트로 표현된 유닉스 시간은 1970년 1월 1일 00:00 (UTC)에서 2,147,483,647 (231 - 1) 지난 후인 2038년 1월 19일 03:14:08 UTC에 2038년 문제를 발생시킨다. 이는 산술 오버플로와 관련 있는 문제이다.</P>
@@ -149,6 +163,7 @@
       round: 1
     });
     setFirst(date);
+    $('#logs').prepend('<tr><td>' + time + '</td><td>' + date.toLocaleString() + '</td></tr>');
   });
 
 
@@ -178,16 +193,36 @@
       case 10:
         $('.type').text('(Seconds | Unix)')
         set(new Date(Number(event.currentTarget.value) * 1000));
+        $('#logs').prepend('<tr><td>' + event.currentTarget.value + '</td><td>' + new Date(Number(event.currentTarget.value) * 1000).toLocaleString() + '</td></tr>');
         break;
       case 13:
         $('.type').text('(Milliseconds)')
         set(new Date(Number(event.currentTarget.value)));
+        $('#logs').prepend('<tr><td>' + event.currentTarget.value + '</td><td>' + new Date(Number(event.currentTarget.value)).toLocaleString() + '</td></tr>');
         break;
       default:
         $('.type').text('(Unkown)');
         break;
     }
   })
+
+  $('#dayTo').on('change', (event) => {
+    let day = event.currentTarget.value;
+    if(day < 1) {
+      day = 1;
+      $('#dayTo').val(1);
+    }
+    $('#timeTo').val(day * 86400);
+  });
+
+  $('#timeTo').on('change', (event) => {
+    let time = event.currentTarget.value;
+    if(time < 86400) {
+      time = 86400;
+      $('#timeTo').val(86400);
+    }
+    $('#dayTo').val(time / 86400);
+  });
 
   $('#timestamp').on('click', () => {
     auto = false;
@@ -202,6 +237,7 @@
     let _date = new Date($('#year').val(), $('#month').val() - 1, $('#day').val(), $('#hour').val(), $('#min')
     .val(), $('#second').val());
     $('#timestamp').val(Math.floor(_date.getTime() / 1000));
+    $('#logs').prepend('<tr><td>' + Math.floor(_date.getTime() / 1000) + '</td><td>' + _date.toLocaleString() + '</td></tr>');
     set(_date);
   })
 
