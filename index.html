@@ -158,19 +158,19 @@
       </table>
     </div>
     <div id="dark-overlay">
-      <label for="Dark">mode</label>
+      <label for="Dark">Dark</label>
       <input id="dark" type="checkbox">
     </div>
 </body>
 
 </html>
 <script src="./js/anime/anime.min.js"></script>
+<script src="./js/jquery.cookie.js"></script>
 
 <script>
   let time = Math.floor(Date.now() / 1000);
   let date = new Date(time * 1000);
   let auto = true;
-
 
   $(document).ready(function () {
     anime({
@@ -181,8 +181,8 @@
     });
     setFirst(date);
     addLog(time, date.toLocaleString());
+    setDark($.cookie('darkmode'));
   });
-
 
   // loop
   setInterval(function () {
@@ -262,14 +262,19 @@
     if($('#logs tr').length > 6) {
       $("#logs tr:last-child").remove();
     }
-    console.log($('#logs tr').length);
     $('#logs').prepend('<tr><td>' + time + '</td><td>' + date + '</td></tr>');
   }
 
   // dark mode
   $('#dark').on('change', () => {
     let isDark = $('#dark').prop("checked");
-    if(isDark) {
+    $.cookie('darkmode', isDark);
+    setDark(isDark);
+  })
+
+  function setDark(isDark) {
+    if(isDark == 'true' || isDark === true) {
+      $('#dark').prop("checked", true);
       $('body').css('color', '#ffffff');
       $('body table').css('color', '#ffffff');
       $('body').css('background-color', '#000000');
@@ -280,7 +285,7 @@
       $('body').css('background-color', '#ffffff');
       $('#clock').css('background-color', '#000000');
     }
-  })
+  }
 
   function set(_date) {
     $('.gmt').text(_date.toGMTString());
