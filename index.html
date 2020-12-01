@@ -110,10 +110,6 @@
           <small>Seconds</small>
           <input class="form-control date" id="second" placeholder="second">
         </div>
-        <div class="inner-form">
-          <small>Milliseconds</small>
-          <input class="form-control date" id="milli" placeholder="milli">
-        </div>
       </div>
       <small>Displays the timestamp based on the date.</small>
     </div>
@@ -126,14 +122,6 @@
       <tr>
         <td>Local</td>
         <td class="local"></td>
-      </tr>
-      <tr>
-        <td>Locale</td>
-        <td class="locale"></td>
-      </tr>
-      <tr>
-        <td>Time</td>
-        <td class="time"></td>
       </tr>
       <small>Displays the Human Readable based on the timestamp.</small>
     </table>
@@ -152,8 +140,8 @@
     <br>
     <label for="Logs">Logs</label>
     <br>
-    <small>Shows up to 7 logs</small>
-    <div id="logs-overlay">
+    <small>Shows up logs</small>
+    <div id="logs">
       <table class="table" id="logs">
       </table>
     </div>
@@ -316,7 +304,6 @@
     if ($('#second').val() != seconds) {
       $('#second').val(seconds);
     }
-    $('#milli').val(_date.getMilliseconds());
   }
 
   function setFirst(_date) {
